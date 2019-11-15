@@ -48,7 +48,7 @@ int main(void)
     while (1) 
     {
         if(USART_IsSendReady(0))   {
-            ledValue ^= 0x01;
+            ledValue ^= 0xFF;
             USART_Send(ledValue,0);
         }
         while(!TimerFlag);
