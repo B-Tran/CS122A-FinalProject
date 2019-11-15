@@ -1,0 +1,9 @@
+
+**/build/*.hex
+**/build/objects/*.elf
+**/build/objects/*.o
+**/build/results/*.txt
+**/build/results/*.vcd
+
+!**.gitkeep
+btran054_lab*.tgz
