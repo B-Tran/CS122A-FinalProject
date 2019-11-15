@@ -27,7 +27,7 @@ from time import sleep
 #For LCD TFT SCREEN:
 DC = 24
 RST = 25
-LED = 15
+LED = 23
 
 #For PEN TOUCH:
 #   (nothing)

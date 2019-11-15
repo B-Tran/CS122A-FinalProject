@@ -16,7 +16,7 @@ from time import sleep
 
 DC = 24
 RST = 25
-LED = 15
+LED = 23
 PEN = 26
 
 
