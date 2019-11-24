@@ -17,10 +17,10 @@ void PinChangeInit(void)
 ISR(PCINT0_vect)
 {
     if(~PINA & 0x01)   {
-        motionDetected = 0x00;
+        PORTB = 0x00;
     }
     else   {
-        motionDetected = 0x01;
+        PORTB = 0xFF;
     }
 }
 #endif //PIN_CHANGE_INTERRUPT_H
