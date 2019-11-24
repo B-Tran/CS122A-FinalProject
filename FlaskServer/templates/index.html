@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+            <title>SOMBODY ONCE TOLD ME</title>
+            <link rel="stylesheet" type="text/css" media="screen" href="../static/main.css" />
+    </head>
+    <body>
+        <h4>THE WORLD IS GONNA ROLL ME</h4>
+        <ul>
+            {% for item in my_list %}
+                <li>{{ item }}</li>
+            {% endfor %}    
+        </ul>
+        <p><a href="/hewwo">Hewoo</a></p>
+        <!-- Example of changing suff with action-->
+        <p id="para">Some text here</p>
+        <button onclick="changeColor('blue');">blue</button>
+        <button onclick="changeColor('red');">red</button>
+        <script>
+            function changeColor(newColor) {
+                var elem = document.getElementById('para');
+                elem.style.color = newColor;
+            }
+        </script>
+    </body>
+</html>
