@@ -7,19 +7,19 @@ from flask import make_response
 app = Flask(__name__)
 increment = 0
 
-#List_Data= {"data1":"1", "data2":"2", "data3":"3", "data4":"4"}
+#List_Data= {"data1":"0", "data2":"1", "data3":"2", "data4":"3"}
 List_Data = ["1","2","3","4"]
 @app.route('/')
 def index():
     return render_template('index.html')
     #return 'this is a test.'
 
-@app.route('/update')
-def update():
-    List_Data[0] = List_Data[1]
-    List_Data[1] = List_Data[2]
-    List_Data[2] = List_Data[3]
-    List_Data[3] = "%d" % (int(List_Data[3])+1)
+@app.route('/update/<string:SensorData>')
+def update(SensorData):
+    List_Data[3] = List_Data[2]
+    List_Data[2] = List_Data[1]
+    List_Data[1] = List_Data[0]
+    List_Data[0] = "%s" % (SensorData)
     return None
 
 @app.route('/GetData1')
