@@ -25,7 +25,7 @@
 /*---------------------------------------------------------------
   Declarations of enums for the state machines below
   ---------------------------------------------------------------*/
-enum motionSensor{motionInit, motionWait, motionDetect};
+enum motionSensor{motionInit, motionWait, motionDetect, motionLights};
 enum uartRec {ur_Init, ur_Wait, ur_Receive};
 enum uartSend {us_Init, us_Wait, us_Send};
 /*---------------------------------------------------------------
@@ -51,12 +51,15 @@ int sensor_Tick(int state)   {
             }
             else   {
                 state = motionWait;
-                ++lightCount;
             }
             break;
         case motionDetect:
-            if(motionDetected)   {
-                state = motionDetect;
+            state = motionLights;
+            break;
+        case motionLights:
+            if(lightCount < 100)   {
+                ++lightCount;
+                state = motionLights;
             }
             else   {
                 state = motionWait;
@@ -72,17 +75,16 @@ int sensor_Tick(int state)   {
             state = motionWait;
             break;
         case motionWait:
-            if(lightCount >= 10)   {
-                PORTB = 0x00;
-                lightCount = 0;
-            }
+            PORTB = 0x00;
+            lightCount = 0;
             break;
         case motionDetect:
             PORTB = 0xFF;
-            lightCount = 0;
+            break;
+        case motionLights:
+            PORTB = 0xFF;
             break;
         default:
-            PORTB = 0xC0;
             break;
     }
     return state;
@@ -117,7 +119,6 @@ int ur_Tick(int state)   {
             data = USART_Receive(0);
             break;
         default:
-            data = 0x0F;
             break;
     }
     return state;
@@ -158,7 +159,6 @@ int us_Tick(int state)   {
             USART_Send(motionDetected, 0);
             break;
         default:
-            PORTB = 0xD0;
             break;
     
     }
