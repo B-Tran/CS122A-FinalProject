@@ -20,7 +20,7 @@ def update(SensorData):
     List_Data[2] = List_Data[1]
     List_Data[1] = List_Data[0]
     List_Data[0] = "%s" % (SensorData)
-    return None
+    return jsonify(List_Data)
 
 @app.route('/GetData1')
 def GetData1():
