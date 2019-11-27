@@ -1,7 +1,10 @@
 import tkinter as tk
 from tkinter import ttk
 import time
+import datetime
 import serial
+import requests
+from requests.exceptions import HTTPError
 from digi.xbee.devices import *
 
 textWindow = None
@@ -214,8 +217,28 @@ def update(textWin):
     textWin.delete('1.0', tk.END)
     textWin.insert(tk.END, network_string(xnet))
 
+
+def server_send():
+    if xnet.has_devices():
+        currentDT = datetime.datetime.now()
+        xbee_message = base.read_data()
+        remote = xbee_message.remote_device
+        node = xnet.get_device_by_64(remote.get_64bit_addr())
+        data = xbee_message.data
+        print("%s"%node)
+        url = "http://raspberrypi.local:5000/update/{}".format(("%s"%node) + str(currentDT))
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+        except HTTPError as http_err:
+            print(f'HTTP error occured: {http_err}')
+        except Exception as err:
+            print(f'Other error occured: {err}')
+    root.after(5000,server_send)
+
 try:
     root = mainMenu()
+    root.after(1000, server_send)
     root.mainloop()
 except KeyboardInterrupt:
     print('')
