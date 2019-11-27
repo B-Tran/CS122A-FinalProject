@@ -79,6 +79,7 @@ int sensor_Tick(int state)   {
             lightCount = 0;
             break;
         case motionDetect:
+            lightCount = 0;
             PORTB = 0xFF;
             break;
         case motionLights:
