@@ -7,14 +7,24 @@
         <h4>The Last 4 notifications will show up here</h4>
         <!-- Example of changing suff with action-->
         <div id="serverData1"></div>
+        <!--
         <div id="serverData2"></div>
         <div id="serverData3"></div>
         <div id="serverData4"></div>
+        -->
         <script type="text/javascript">
             //check for browser support
             if(typeof(EventSource)!="undefined"){
                 //create an object, passing it the name and location
                 //of the server side script
+                var eSource = new EventSource("/GetData1");
+                eSource.onmessage = function (event){
+                    var data = JSON.parse(event.data)
+                    for(var key in data){
+                    document.getElementById("serverData1").innerHTML += data[key] + "<br>";
+                    }
+                }
+                /*
                 var eSource = new EventSource("/GetData1");
                 eSource.onmessage=function(event){
                     document.getElementById("serverData1").innerHTML = event.data + "<br>";
@@ -31,6 +41,7 @@
                 eSource3.onmessage=function(event){
                     document.getElementById("serverData4").innerHTML = event.data + "<br>";
                 };
+                */
             }
             else{
                 document.getElementById("serverData1").innerHTML = 
