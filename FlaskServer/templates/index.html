@@ -5,60 +5,38 @@
     </head>
     <body>
         <h4>The Last 4 notifications will show up here</h4>
-        <!-- Example of changing suff with action-->
-        <div id="serverData1"></div>
-        <!--
-        <div id="serverData2"></div>
-        <div id="serverData3"></div>
-        <div id="serverData4"></div>
-        -->
+        <!-- Event Source Updates of the notifications List Here-->
+        <div id="serverData1">
+            <ul style="list-style-type:none;">
+                <li id="data1"></li>
+                <li id="data2"></li>
+                <li id="data3"></li>
+                <li id="data4"></li>
+            </ul>
+        </div>
+
+        <!-- Script for getting the updates from the server -->
         <script type="text/javascript">
             //check for browser support
             if(typeof(EventSource)!="undefined"){
+                const ListData = ["data1", "data2", "data3", "data4"];
+                var ListIndex = 0;
                 //create an object, passing it the name and location
                 //of the server side script
                 var eSource = new EventSource("/GetData1");
                 eSource.onmessage = function (event){
+                    //parsiing the data from the event and indexing through the JSON
                     var data = JSON.parse(event.data)
                     for(var key in data){
-                    document.getElementById("serverData1").innerHTML += data[key] + "<br>";
+                    document.getElementById(ListData[ListIndex]).innerHTML = data[key] + "<br>";
+                    ListIndex++;
                     }
                 }
-                /*
-                var eSource = new EventSource("/GetData1");
-                eSource.onmessage=function(event){
-                    document.getElementById("serverData1").innerHTML = event.data + "<br>";
-                };
-                var eSource1 = new EventSource("/GetData2");
-                eSource1.onmessage=function(event){
-                    document.getElementById("serverData2").innerHTML = event.data + "<br>";
-                };
-                var eSource2 = new EventSource("/GetData3");
-                eSource2.onmessage=function(event){
-                    document.getElementById("serverData3").innerHTML = event.data + "<br>";
-                };
-                var eSource3 = new EventSource("/GetData4");
-                eSource3.onmessage=function(event){
-                    document.getElementById("serverData4").innerHTML = event.data + "<br>";
-                };
-                */
             }
             else{
                 document.getElementById("serverData1").innerHTML = 
                 "Your browser doesn't recieve server-sent events.";
             }
         </script>
-        
-    <!--
-    <p id="para">This is a test.</p>
-    <button onclick="changeColor('blue');">blue</button>
-    <button onclick="changeColor('red');">red</button>
-    <script>
-        function changeColor(newColor) {
-            var elem = document.getElementById('para');
-            elem.style.color = newColor;
-        }
-    </script>
-    -->
     </body>
 </html>
