@@ -147,7 +147,7 @@ def textField_remove(e, text):
     if remote == None:
         text.set("Error! That node does not exist in the network")
     else:
-        base.send_data(remote, b'0')
+        base.send_data(remote,b'0')
         xnet.remove_device(remote)
         text.set("Success! Node %s was removed from the network" % string)
 
@@ -181,7 +181,7 @@ def textField_add(e,text):
     if remote == None:
         text.set("Error! This node does not exist!")
     else:
-        base.send_data(remote, b'1')
+        base.send_data(remote,b'1')
         text.set("Success! Node was added to network")
 
 
@@ -228,19 +228,19 @@ def server_send():
         remote = xbee_message.remote_device
         node = xnet.get_device_by_64(remote.get_64bit_addr())
         data = xbee_message.data
-        url = "http://raspberrypi.local:5000/update/{}".format(("%s"%node) + str(currentDT))
-        try:
-            response = requests.get(url)
-            response.raise_for_status()
-        except HTTPError as http_err:
-            print(f'HTTP error occured: {http_err}')
-        except Exception as err:
-            print(f'Other error occured: {err}')
+       # url = "http://raspberrypi.local:5000/update/{}".format(("%s"%node) + str(currentDT))
+       # try:
+       #     response = requests.get(url)
+       #     response.raise_for_status()
+       # except HTTPError as http_err:
+       #     print(f'HTTP error occured: {http_err}')
+       # except Exception as err:
+       #     print(f'Other error occured: {err}')
     root.after(5000,server_send)
 
 try:
     root = mainMenu()
-   # root.after(1000, server_send)
+    root.after(1000, server_send)
     root.mainloop()
 except KeyboardInterrupt:
     print('')
