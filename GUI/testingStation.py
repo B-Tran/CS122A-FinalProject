@@ -82,15 +82,15 @@ class StartPage(tk.Frame):
         label.pack()
 
         button1 = ttk.Button(self, text="List Network", command= lambda: controller.show_frame(PageOne))
-        button1.pack()
+        button1.pack(fill=tk.X, pady=4)
         button2 = ttk.Button(self, text="Remove Devices", command= lambda: controller.show_frame(PageTwo))
-        button2.pack()
+        button2.pack(fill=tk.X, pady=4)
         button3 = ttk.Button(self, text="Add Devices", command= lambda: controller.show_frame(PageThree))
-        button3.pack()
+        button3.pack(fill=tk.X, pady=4)
         button4 = ttk.Button(self, text="Scan for Devices", command= lambda: controller.show_frame(PageFour))
-        button4.pack()
+        button4.pack(fill=tk.X, pady=4)
         button5 = ttk.Button(self, text="Exit", command= lambda: controller.quit())
-        button5.pack()
+        button5.pack(fill=tk.X, pady=4)
 
 class PageOne(tk.Frame):
     def __init__(self, parent, controller):
@@ -109,11 +109,7 @@ class PageOne(tk.Frame):
         button6 = ttk.Button(self, text="Refresh text", command= lambda: update(textWindow))
         button6.pack()
         textWindow = tk.Text(self, height=5, width=30)
-        scroll = ttk.Scrollbar(self)
-        scroll.pack(side=tk.RIGHT, fill=tk.Y)
-        textWindow.pack(side=tk.LEFT, fill=tk.Y)
-        scroll.config(command=textWindow.yview)
-        textWindow.config(yscrollcommand=scroll.set)
+        textWindow.pack(fill=tk.X, pady=50)
 
 class PageTwo(tk.Frame):
     def __init__(self, parent, controller):
@@ -236,11 +232,12 @@ def server_send():
        #     print(f'HTTP error occured: {http_err}')
        # except Exception as err:
        #     print(f'Other error occured: {err}')
-    root.after(5000,server_send)
+   #l root.after(5000,server_send)
 
 try:
     root = mainMenu()
-    root.after(1000, server_send)
+    root.geometry("420x640")
+    #root.after(1000, server_send)
     root.mainloop()
 except KeyboardInterrupt:
     print('')
