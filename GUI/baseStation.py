@@ -238,7 +238,7 @@ def server_send():
 
 try:
     root = mainMenu()
-    root.after(1000, server_send)
+   # root.after(1000, server_send)
     root.mainloop()
 except KeyboardInterrupt:
     print('')
