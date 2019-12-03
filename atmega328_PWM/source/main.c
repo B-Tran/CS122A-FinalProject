@@ -52,6 +52,7 @@ int main(void)
         //OCR1A = timer;
         //OCR1B = timer;
         set_LED_PWM(CHAN_PB2, timer);
+        set_LED_PWM(CHAN_PB3, timer);
         set_LED_PWM(CHAN_PD3, timer);
 //        set_LED_PWM(CHAN_PD5, timer);
         set_LED_PWM(CHAN_PD6, timer);
