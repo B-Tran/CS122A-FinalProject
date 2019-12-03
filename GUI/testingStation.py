@@ -3,11 +3,22 @@ from tkinter import ttk
 import time
 import datetime
 import serial
+import re
 import requests
 from requests.exceptions import HTTPError
 from digi.xbee.devices import *
 
+
+class xbeeDevice():
+    def __init__(self,name):
+        self.name = name
+        deviceList.append(self)
+        deviceNames.append(name)
+
 textWindow = None
+deviceList = []
+deviceNames = []
+listCount = 0
 base = XBeeDevice("/dev/serial0", 9600)
 
 base.open()
@@ -45,9 +56,18 @@ def scan_network(network):
     print("Beginning the network search")
     while xnet.is_discovery_running():
         time.sleep(0.1)
+    xmap = map(str,network.get_devices())
+    for i in xmap:
+        i = re.sub('[A-Z0-9]+\ \-\ ', '', i)
+        xbeeDevice(str(i))
 
 def stop_scan():
     xnet.stop_discovery_process()
+
+def update(textWin):
+    textWin.delete('1.0', tk.END)
+    textWin.insert(tk.END, network_string(xnet))
+
 
 xnet.add_device_discovered_callback(callback_device_discovered)
 xnet.add_discovery_process_finished_callback(callback_discovery_finished)
@@ -64,13 +84,13 @@ class mainMenu(tk.Tk):
 
         self.frames = {}
         
-        for F in (StartPage, PageOne, PageTwo,PageThree,PageFour):
+        for F in (StartPage, PageOne, PageTwo,PageThree,PageFour, PageFive):
             frame = F(container, self)
             self.frames[F] = frame
             frame.grid(row=0,column=0,sticky="nsew")
         
         self.show_frame(StartPage)
-
+        
     def show_frame(self, cont):
         frame = self.frames[cont]
         frame.tkraise()
@@ -82,15 +102,19 @@ class StartPage(tk.Frame):
         label.pack()
 
         button1 = ttk.Button(self, text="List Network", command= lambda: controller.show_frame(PageOne))
-        button1.pack()
+        button1.pack(fill=tk.X, pady=4)
         button2 = ttk.Button(self, text="Remove Devices", command= lambda: controller.show_frame(PageTwo))
-        button2.pack()
+        button2.pack(fill=tk.X, pady=4)
         button3 = ttk.Button(self, text="Add Devices", command= lambda: controller.show_frame(PageThree))
-        button3.pack()
-        button4 = ttk.Button(self, text="Scan for Devices", command= lambda: controller.show_frame(PageFour))
-        button4.pack()
-        button5 = ttk.Button(self, text="Exit", command= lambda: controller.quit())
-        button5.pack()
+        button3.pack(fill=tk.X, pady=4)
+
+        button4 = ttk.Button(self, text="Select Device(s)", command=lambda: controller.show_frame(PageFive))
+        button4.pack(fill=tk.X, pady=4)
+
+        button5 = ttk.Button(self, text="Scan for Devices", command= lambda: controller.show_frame(PageFour))
+        button5.pack(fill=tk.X, pady=4)
+        button6 = ttk.Button(self, text="Exit", command= lambda: controller.quit())
+        button6.pack(fill=tk.X, pady=4)
 
 class PageOne(tk.Frame):
     def __init__(self, parent, controller):
@@ -109,11 +133,7 @@ class PageOne(tk.Frame):
         button6 = ttk.Button(self, text="Refresh text", command= lambda: update(textWindow))
         button6.pack()
         textWindow = tk.Text(self, height=5, width=30)
-        scroll = ttk.Scrollbar(self)
-        scroll.pack(side=tk.RIGHT, fill=tk.Y)
-        textWindow.pack(side=tk.LEFT, fill=tk.Y)
-        scroll.config(command=textWindow.yview)
-        textWindow.config(yscrollcommand=scroll.set)
+        textWindow.pack(fill=tk.X, pady=50)
 
 class PageTwo(tk.Frame):
     def __init__(self, parent, controller):
@@ -141,15 +161,25 @@ class PageTwo(tk.Frame):
         button5 = ttk.Button(self, text="Enter", command= lambda:textField_remove(entry,text))
         button5.pack()
 
-def textField_remove(e, text):
-    string = e.get()
-    remote = xnet.get_device_by_node_id(string)
-    if remote == None:
-        text.set("Error! That node does not exist in the network")
-    else:
-        base.send_data(remote, b'0')
-        xnet.remove_device(remote)
-        text.set("Success! Node %s was removed from the network" % string)
+        def textField_remove(e, text):
+            string = e.get()
+            remote = xnet.get_device_by_node_id(string)
+            if remote == None:
+                text.set("Error! That node does not exist in the network")
+            else:
+                base.send_data(remote,b'0')
+                xnet.remove_device(remote)
+                text.set("Success! Node %s was removed from the network" % string)
+                if deviceNames[0] == string:
+                    deviceList.pop(0)
+                    deviceNames.pop(0)
+                else:
+                    for i in range(1, len(deviceList)):
+                        if deviceNames[i] == string:
+                            deviceList.pop(i)
+                            deviceNames.pop(i)
+                print(deviceNames)
+
 
 
 class PageThree(tk.Frame):
@@ -175,14 +205,17 @@ class PageThree(tk.Frame):
         label2.pack()
         button5 = ttk.Button(self, text="Enter", command= lambda:textField_add(entry,text))
         button5.pack()
-def textField_add(e,text):
-    string = e.get()
-    remote = xnet.discover_device(string)
-    if remote == None:
-        text.set("Error! This node does not exist!")
-    else:
-        base.send_data(remote, b'1')
-        text.set("Success! Node was added to network")
+
+
+        def textField_add(e,text):
+            string = e.get()
+            remote = xnet.discover_device(string)
+            if remote == None:
+                text.set("Error! This node does not exist!")
+            else:
+                base.send_data(remote,b'1')
+                text.set("Success! Node was added to network")
+                xbeeDevice(string)
 
 
         
@@ -210,15 +243,37 @@ class PageFour(tk.Frame):
         button4.pack()
         global textWindow
         textWindow = tk.Text(self, height=5, width=30)
-        scroll = ttk.Scrollbar(self)
-        scroll.pack(side=tk.RIGHT, fill=tk.Y)
-        textWindow.pack(side=tk.LEFT, fill=tk.Y)
-        scroll.config(command=textWindow.yview)
-        textWindow.config(yscrollcommand=scroll.set)
+        textWindow.pack(fill=tk.X, pady=50)
 
-def update(textWin):
-    textWin.delete('1.0', tk.END)
-    textWin.insert(tk.END, network_string(xnet))
+class PageFive(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self,parent)
+        label = tk.Label(self, text="Device Select")
+        label.pack()
+
+        button2 = ttk.Button(self, text="Back to Main Menu", command=lambda: controller.show_frame(StartPage))
+        button2.pack(fill=tk.X, pady=10)
+
+        curDevice = tk.StringVar()
+        curDevice.set("empty")
+
+        deviceMenu = tk.OptionMenu(self, curDevice, 'empty')
+        deviceMenu.pack()
+        def callback_update(self):
+            if len(deviceList) == 0: 
+                deviceMenu.children["menu"].delete(0,"end")
+                deviceMenu.children["menu"].add_command(label="empty", command = None)
+                curDevice.set("empty")
+            else:
+                deviceNames = []
+                deviceMenu.children["menu"].delete(0,"end")
+                for node in deviceList:
+                    deviceNames.append(node.name)
+                    deviceMenu.children["menu"].add_command(label=node.name, command = lambda device=node.name: curDevice.set(device))
+                curDevice.set(deviceNames[0])
+        
+        
+        deviceMenu.bind("<Enter>", callback_update)
 
 
 def server_send():
@@ -228,19 +283,21 @@ def server_send():
         remote = xbee_message.remote_device
         node = xnet.get_device_by_64(remote.get_64bit_addr())
         data = xbee_message.data
-        url = "http://raspberrypi.local:5000/update/{}".format(("%s"%node) + str(currentDT))
-        try:
-            response = requests.get(url)
-            response.raise_for_status()
-        except HTTPError as http_err:
-            print(f'HTTP error occured: {http_err}')
-        except Exception as err:
-            print(f'Other error occured: {err}')
-    root.after(5000,server_send)
+       # url = "http://raspberrypi.local:5000/update/{}".format(("%s"%node) + str(currentDT))
+       # try:
+       #     response = requests.get(url)
+       #     response.raise_for_status()
+       # except HTTPError as http_err:
+       #     print(f'HTTP error occured: {http_err}')
+       # except Exception as err:
+       #     print(f'Other error occured: {err}')
+   #l root.after(5000,server_send)
 
 try:
+    #scan_network(xnet)
     root = mainMenu()
-   # root.after(1000, server_send)
+    root.geometry("420x640")
+    #root.after(1000, server_send)
     root.mainloop()
 except KeyboardInterrupt:
     print('')

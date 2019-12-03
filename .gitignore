@@ -1,3 +1,4 @@
+turnin/*.c
 
 **/build/*.hex
 **/build/objects/*.elf
@@ -7,3 +8,4 @@
 
 !**.gitkeep
 btran054_lab*.tgz
+arent007_lab*.tgz
