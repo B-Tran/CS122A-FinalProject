@@ -1,9 +1,7 @@
 import socket
 import time
-
-
-global clientsocket
-global address
+clientsocket = None
+address = None
 
 def interpretCommand(cmd):
     if cmd == bytes("exit","utf-8"):
@@ -62,13 +60,14 @@ class xbeeCommunicator():
         self.s.close()
         self.s1.close()
 
+
 if __name__ == '__main__':
     try:
         host = xbeeCommunicator()
         host.handshake()
         while True:
             host.receiveData()
-
+            time.sleep(5)
     except KeyboardInterrupt:
         host.closeCommunicator()
 

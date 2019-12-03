@@ -11,13 +11,14 @@ device.open()
 
 if __name__ == '__main__':
     try:
-        _out = '0'
+        _out = 0
         while True:
-            device.send_data_broadcast(_out.encode())
-            if _out == '9':
-                _out = '0'
+            device.send_data_broadcast(bytes([_out]))
+            if _out == 15:
+                _out = 0
             else:
-                _out = chr(ord(_out) + 1)
+                _out = _out + 1
+               # _out = chr(ord(_out) + 1)
             time.sleep(1)
     except KeyboardInterrupt:
         print('')

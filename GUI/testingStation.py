@@ -59,7 +59,8 @@ def scan_network(network):
     xmap = map(str,network.get_devices())
     for i in xmap:
         i = re.sub('[A-Z0-9]+\ \-\ ', '', i)
-        xbeeDevice(str(i))
+        if i != '':
+            xbeeDevice(str(i))
 
 def stop_scan():
     xnet.stop_discovery_process()
@@ -274,6 +275,61 @@ class PageFive(tk.Frame):
         
         
         deviceMenu.bind("<Enter>", callback_update)
+
+        option = tk.IntVar()
+        lightOn = ttk.Radiobutton(self, text = "lights on", variable = option, value = 1, command = lambda: interpretOption())
+        lightOff = ttk.Radiobutton(self, text = "lights off", variable = option, value = 2, command = lambda: interpretOption())
+        motion = ttk.Radiobutton(self, text = "motion sense", variable = option, value = 3, command = lambda: interpretOption())
+
+        lightOn.pack(anchor="center")
+        lightOff.pack(anchor="center")
+        motion.pack(anchor="center")
+        
+        label1 = ttk.Label(self, text = "Brightness Level")
+        label1.pack()
+
+        sBox = ttk.Spinbox(self, from_ = 0, to = 15, state = 'disabled')
+        sBox.pack()
+
+        button3 = ttk.Button(self, text="Apply Changes", command = lambda: applyOptions())
+        button3.pack()
+        textField = tk.StringVar()
+        label2 = ttk.Label(self, textvariable=textField)
+        label2.pack()
+
+        def interpretOption():
+            if len(deviceList) != 0:
+                sBox['state'] = 'normal'
+            else:
+                sBox['state'] = 'disabled'
+
+        def applyOptions():
+            choice = option.get()
+            val = int(sBox.get())
+            if val > 15:
+                textField.set("Error! Please select a value from 0 to 15 for brightness")
+                pass
+            elif len(deviceList) == 0:
+                textField.set("Error there are no devices in the list")
+            elif choice == 1:
+                node = curDevice.get()
+                textField.set("Setting {}'s lights to on".format(node))    
+                remote = xnet.get_device_by_node_id(node)
+                base.send_data(remote, b'2')
+                time.sleep(.5)
+                base.send_data(remote, bytes([val]))
+            elif choice == 2:
+                node = curDevice.get()
+                textField.set("Setting {}'s lights to off".format(node))
+                remote = xnet.get_device_by_node_id(node)
+                base.send_data(remote, b'3')
+            elif choice == 3:
+                node = curDevice.get()
+                textField.set("Setting {}'s lights to trigger on motion detected".format(node))
+                remote = xnet.get_device_by_node_id(node)
+                base.send_data(remote, b'4')
+                time.sleep(.5)
+                base.send_data(remote, bytes([val]))
 
 
 def server_send():
