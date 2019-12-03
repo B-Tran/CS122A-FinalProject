@@ -1,7 +1,5 @@
 #include "../header/scheduler.h"
 #include "../header/timer.h"
-#include "../header/spi_1284.h"
-#include "../header/io.h"
 #include "../header/usart_ATmega1284.h"
 #include "../header/PinChangeInterrupt.h"
 #include <avr/io.h>
@@ -16,13 +14,14 @@ enum uartSend {us_Init, us_Wait, us_Send};
   ---------------------------------------------------------------*/
 uint8_t lightCount = 0x00;
 uint8_t data = 0x00;
-uint8_t sendFlag = 0x00;
+uint8_t dataFlag = 0x00;
 static task Task1,Task2, Task3;
-uint8_t lightPort = 0x00;
+uint8_t lightPort = 0xFF;
+uint8_t sendFlag = 0x00;
 /*---------------------------------------------------------------
   Declaration of functions below
   ---------------------------------------------------------------*/
-
+void setDimness();
 /*---------------------------------------------------------------
   Declaration of state machine functions below
   ---------------------------------------------------------------*/
@@ -61,15 +60,15 @@ int sensor_Tick(int state)   {
             state = motionWait;
             break;
         case motionWait:
-            PORTB = 0x00;
+            PORTA = 0x00;
             lightCount = 0;
             break;
         case motionDetect:
             lightCount = 0;
-            PORTB = 0xFF;
+            PORTA = lightPort;
             break;
         case motionLights:
-            PORTB = 0xFF;
+            PORTA = lightPort;
             break;
         default:
             break;
@@ -104,27 +103,34 @@ int ur_Tick(int state)   {
             break;
         case ur_Receive:
             data = USART_Receive(0);
-            switch(data)   {
-                case 0x30:
-                    Task3.active = 0;
-                    break;
-                case 0x31:
-                    Task3.active = 1;
-                    break;
-                case 0x32:
-                    Task1.active = 0;
-                    lightPort = 0xFF;
-                    break;
-                case 0x33:
-                    Task1.active = 0;
-                    lightPort = 0x00;
-                    break;
-                case 0x34:
-                    Task1.active = 1;
-                    break;
-                default:
-                    PORTB = 0xAB;
-                    break;
+            if(dataFlag == 0x00)   {
+                switch(data)   {
+                    case 0x30:
+                        Task3.active = 0;
+                        break;
+                    case 0x31:
+                        Task3.active = 1;
+                        break;
+                    case 0x32:
+                        Task1.active = 0;
+                        dataFlag = 1;
+                        break;
+                    case 0x33:
+                        Task1.active = 0;
+                        lightPort = 0x00;
+                        break;
+                    case 0x34:
+                        Task1.active = 1;
+                        dataFlag = 1;
+                        break;
+                    default:
+                        PORTA = 0x01;
+                        break;
+                }
+            }
+            else   {
+                lightPort = data;
+                dataFlag = 0x00;
             }
             break;
         default:
@@ -179,11 +185,9 @@ int us_Tick(int state)   {
 
 int main(void)
 {
-    /* Replace with your application code */
-	//DDRB = 0xBF; PORTB = 0x40;
-    DDRA = 0x00; PORTA = 0xFF; // button inputs
-    DDRB = 0xFF; PORTB = 0x00; // LCD backlight
-	//Initialization of SPI and Timer functionality
+    DDRA = 0xFF; PORTA = 0x00;
+    DDRB = 0x00; PORTB = 0xFF;
+    
     PinChangeInit();
     initUSART(0);
     unsigned char i;
@@ -222,8 +226,8 @@ int main(void)
 		}
 		while(!TimerFlag);
 		TimerFlag = 0;
-        if(Task1.active == 0)   {
-            PORTB = lightPort;
+        if(Task1.active == 0x00)   {
+            PORTA = lightPort;
         }
     }
 }

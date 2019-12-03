@@ -6,17 +6,17 @@ void PinChangeInit(void)
 {
     //enable global interrupts
     SREG |= 0x80;
-    //set pins[7:0] to be a pin change interrupt
-    PCICR |= (1 << PCIE0);
-    //set pin[0] to enable the pin change interrupt
-    PCMSK0 |= (1 << PCINT0);
+    //set pins[15:8] to be a pin change interrupt
+    PCICR |= (1 << PCIE1);
+    //set pin[8] to enable the pin change interrupt
+    PCMSK1 |= (1 << PCINT8);
     //enable interupts
     sei();
 }
 
-ISR(PCINT0_vect)
+ISR(PCINT1_vect)
 {
-    if(~PINA & 0x01)   {
+    if(~PINB & 0x01)   {
         motionDetected = 0x00;
     }
     else   {
