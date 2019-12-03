@@ -42,11 +42,6 @@
   ---------------------------------------------------------------*/
 int main(void)
 {
-   DDRB |= (1 << PB1); //define PORTB1 as OUTPUT
-   PORTB &= ~(1 << PB1);
-//   TCCR1A |= (1<<COM1A1) | (1<<WGM10); //set the timer register
-//   TCCR1B |= (1<<WGM12) | (1<<CS11);
-//   OCR1A = 0;
    uint8_t timer = 0;
    uint8_t ledFlag = 0;
    LED_PWM_on();
@@ -54,11 +49,16 @@ int main(void)
    TimerSet(5);
    while(1)
    {
-        set_LED_PWM(timer);
+        //OCR1A = timer;
+        //OCR1B = timer;
+        set_LED_PWM(CHAN_PB2, timer);
+        set_LED_PWM(CHAN_PD3, timer);
+//        set_LED_PWM(CHAN_PD5, timer);
+        set_LED_PWM(CHAN_PD6, timer);
        if(timer < 255 && !ledFlag) // fade low to high
        {
            timer++;
-           set_LED_PWM(timer);
+           //set_LED_PWM(timer);
        }
        else
        {
