@@ -1,20 +1,3 @@
-/*	Author: Brandon Tran btran054@ucr.edu
- *  Partner(s) Name: Angel Renteria arent007@ucr.edu
- *	Lab Section: 023
- *	Assignment: Lab 6  Exercise 3
- *	Exercise Description: [optional - include for your own benefit]
- *  This lab exercise focuses on implementing SPI communication between two
- *  atmega 1284 microcontrollers. In this particular lab exercise, we have a master
- *  that transmits two types of data placed into one 8-bit value. The 8-bit value contains
- *  both a pattern value and speed value. This pattern value is sent to the servant and display on a bank of 8 LEDs.
- *  Depending on the pattern value sent, the pattern displayed will change accordingly. The speed value changes the frequency at which
- *  the pattern is displayed at. The biggest difference is that this challenge problem implements multiple servant that can be selected to
- *  change the pattern and speed, without changing the other servants. The changes made in this lab allow for a particular servant to be selected
- *  and changed. This source file contains the master code for the exercise.
- * 
- *	I acknowledge all content contained herein, excluding template or example
- *	code, is my own original work.
- */
 #include "../header/scheduler.h"
 #include "../header/timer.h"
 #include "../header/spi_1284.h"
@@ -31,8 +14,11 @@ enum uartSend {us_Init, us_Wait, us_Send};
 /*---------------------------------------------------------------
   Declarations of global variables and #defines below
   ---------------------------------------------------------------*/
-unsigned char lightCount = 0x00;
-unsigned char data = 0x00;
+uint8_t lightCount = 0x00;
+uint8_t data = 0x00;
+uint8_t sendFlag = 0x00;
+static task Task1,Task2, Task3;
+uint8_t lightPort = 0x00;
 /*---------------------------------------------------------------
   Declaration of functions below
   ---------------------------------------------------------------*/
@@ -118,6 +104,28 @@ int ur_Tick(int state)   {
             break;
         case ur_Receive:
             data = USART_Receive(0);
+            switch(data)   {
+                case 0x30:
+                    Task3.active = 0;
+                    break;
+                case 0x31:
+                    Task3.active = 1;
+                    break;
+                case 0x32:
+                    Task1.active = 0;
+                    lightPort = 0xFF;
+                    break;
+                case 0x33:
+                    Task1.active = 0;
+                    lightPort = 0x00;
+                    break;
+                case 0x34:
+                    Task1.active = 1;
+                    break;
+                default:
+                    PORTB = 0xAB;
+                    break;
+            }
             break;
         default:
             break;
@@ -126,43 +134,46 @@ int ur_Tick(int state)   {
 }
 
 int us_Tick(int state)   {
-    switch(state)   {
-        case us_Init:
-            break;
-        case us_Wait:
-            if(USART_IsSendReady(0) && motionDetected)   {
-                state = us_Send;
-            }
-            else   {
+        switch(state)   {
+            case us_Init:
+                break;
+            case us_Wait:
+                if(USART_IsSendReady(0) && motionDetected)   {
+                    state = us_Send;
+                }
+                else   {
+                    state = us_Wait;
+                }
+                break;
+            case us_Send:
+                if(motionDetected)   {
+                    state = us_Send;
+                }
+                else   {
+                    state = us_Wait;
+                    sendFlag = 0x00;
+                }
+                break;
+            default:
+                state = us_Init;
+                break;
+        }
+        switch(state)   {
+            case us_Init:
                 state = us_Wait;
-            }
-            break;
-        case us_Send:
-            if(motionDetected)   {
-                state = us_Send;
-            }
-            else   {
-                state = us_Wait;
-            }
-            break;
-        default:
-            state = us_Init;
-            break;
-    }
-    switch(state)   {
-        case us_Init:
-            state = us_Wait;
-            break;
-        case us_Wait:
-            USART_Send(0,0);
-            break;
-        case us_Send:
-            USART_Send(motionDetected, 0);
-            break;
-        default:
-            break;
+                break;
+            case us_Wait:
+                break;
+            case us_Send:
+                if(sendFlag == 0)   {
+                    USART_Send(motionDetected, 0);
+                    sendFlag = 0x01;
+                }
+                break;
+            default:
+                break;
     
-    }
+        }
     return state;
 }
 
@@ -175,7 +186,6 @@ int main(void)
 	//Initialization of SPI and Timer functionality
     PinChangeInit();
     initUSART(0);
-    static task Task1,Task2, Task3;
     unsigned char i;
     unsigned long long taskPeriod = 50;
 	unsigned char taskSize = 3;
@@ -195,7 +205,7 @@ int main(void)
     Task3.period = 500;
     Task3.elapsedTime = Task3.period;
     Task3.TickFct = us_Tick;
-    Task3.active = 1;
+    Task3.active = 0;
     TimerOn();
 	TimerSet(taskPeriod);
     while (1) 
@@ -212,6 +222,9 @@ int main(void)
 		}
 		while(!TimerFlag);
 		TimerFlag = 0;
+        if(Task1.active == 0)   {
+            PORTB = lightPort;
+        }
     }
 }
 
