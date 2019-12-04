@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter.font import Font
 from tkinter import ttk
 import time
 import datetime
@@ -102,19 +103,19 @@ class StartPage(tk.Frame):
         label = tk.Label(self, text="Main Menu")
         label.pack()
 
-        button1 = ttk.Button(self, text="List Network", command= lambda: controller.show_frame(PageOne))
+        button1 = tk.Button(self, text="List Network", height = 3, command= lambda: controller.show_frame(PageOne))
         button1.pack(fill=tk.X, pady=4)
-        button2 = ttk.Button(self, text="Remove Devices", command= lambda: controller.show_frame(PageTwo))
+        button2 = tk.Button(self, text="Remove Devices", height = 3, command= lambda: controller.show_frame(PageTwo))
         button2.pack(fill=tk.X, pady=4)
-        button3 = ttk.Button(self, text="Add Devices", command= lambda: controller.show_frame(PageThree))
+        button3 = tk.Button(self, text="Add Devices", height = 3, command= lambda: controller.show_frame(PageThree))
         button3.pack(fill=tk.X, pady=4)
 
-        button4 = ttk.Button(self, text="Select Device(s)", command=lambda: controller.show_frame(PageFive))
+        button4 = tk.Button(self, text="Select Device(s)", height = 3, command=lambda: controller.show_frame(PageFive))
         button4.pack(fill=tk.X, pady=4)
 
-        button5 = ttk.Button(self, text="Scan for Devices", command= lambda: controller.show_frame(PageFour))
+        button5 = tk.Button(self, text="Scan for Devices", height = 3, command= lambda: controller.show_frame(PageFour))
         button5.pack(fill=tk.X, pady=4)
-        button6 = ttk.Button(self, text="Exit", command= lambda: controller.quit())
+        button6 = tk.Button(self, text="Exit", height = 3, command= lambda: controller.quit())
         button6.pack(fill=tk.X, pady=4)
 
 class PageOne(tk.Frame):
@@ -123,18 +124,20 @@ class PageOne(tk.Frame):
         label = ttk.Label(self, text="Display Network Menu")
         label.pack()
 
-        button1 = ttk.Button(self, text="Back to Main Menu", command= lambda: controller.show_frame(StartPage))
-        button1.pack()
-        button3 = ttk.Button(self, text="Remove Devices", command= lambda: controller.show_frame(PageTwo))
-        button3.pack()
-        button4 = ttk.Button(self, text="Add Devices", command= lambda: controller.show_frame(PageThree))
-        button4.pack()
-        button5 = ttk.Button(self, text="Scan Network", command= lambda: controller.show_frame(PageFour))
-        button5.pack()
-        button6 = ttk.Button(self, text="Refresh text", command= lambda: update(textWindow))
+        button6 = tk.Button(self, text="Refresh text", height = 1, width = 47, command= lambda: update(textWindow))
         button6.pack()
-        textWindow = tk.Text(self, height=5, width=30)
-        textWindow.pack(fill=tk.X, pady=50)
+        textWindow = tk.Text(self, height= 4, width=50)
+        textWindow.pack(anchor='center')
+        button1 = tk.Button(self, text="Back to Main Menu", height = 2, command= lambda: controller.show_frame(StartPage))
+        button1.pack(fill = tk.X, pady = 5)
+        button3 = tk.Button(self, text="Remove Devices", height = 2, command= lambda: controller.show_frame(PageTwo))
+        button3.pack(fill = tk.X, pady= 5)
+        button4 = tk.Button(self, text="Add Devices", height = 2, command= lambda: controller.show_frame(PageThree))
+        button4.pack(fill = tk.X, pady = 5)
+        button5 = tk.Button(self, text="Scan Network", height = 2, command= lambda: controller.show_frame(PageFour))
+        button5.pack(fill = tk.X, pady = 5)
+        button6 = tk.Button(self, text="Select Device", height = 2, command= lambda: controller.show_frame(PageFive))
+        button6.pack(fill = tk.X, pady = 5)
 
 class PageTwo(tk.Frame):
     def __init__(self, parent, controller):
@@ -143,24 +146,26 @@ class PageTwo(tk.Frame):
         label = tk.Label(self, text="Remove Device Menu")
         label.pack()
 
-        button1 = ttk.Button(self, text="Back to Main Menu", command= lambda: controller.show_frame(StartPage))
-        button1.pack()
-        button3 = ttk.Button(self, text="Show Device List", command= lambda: controller.show_frame(PageOne))
-        button3.pack()
-        button4 = ttk.Button(self, text="Add Devices", command= lambda: controller.show_frame(PageThree))
-        button4.pack()
-        button2 = ttk.Button(self, text="Scan Network", command= lambda: controller.show_frame(PageFour))
-        button2.pack()
-
-
         label1 = ttk.Label(self, text="Enter the device identifier to remove below")
-        label1.pack()
-        entry = ttk.Entry(self)
-        entry.pack()
+        label1.pack(pady = 10)
+        entry = ttk.Entry(self, width = 30)
+        entry.pack(pady = 10)
         label2 = ttk.Label(self, textvariable=text)
-        label2.pack()
-        button5 = ttk.Button(self, text="Enter", command= lambda:textField_remove(entry,text))
-        button5.pack()
+        label2.pack(pady = 5)
+        button5 = tk.Button(self, text="Enter", height = 2, width = 30, command= lambda:textField_remove(entry,text))
+        button5.pack(pady = 10)
+
+        button1 = tk.Button(self, text="Back to Main Menu", height = 2, command= lambda: controller.show_frame(StartPage))
+        button1.pack(fill = tk.X,pady = 2)
+        button3 = tk.Button(self, text="Show Device List", height = 2,command= lambda: controller.show_frame(PageOne))
+        button3.pack(fill = tk.X, pady = 2)
+        button4 = tk.Button(self, text="Add Devices", height = 2, command= lambda: controller.show_frame(PageThree))
+        button4.pack(fill = tk.X, pady = 2)
+        button2 = tk.Button(self, text="Scan Network", height = 2, command= lambda: controller.show_frame(PageFour))
+        button2.pack(fill = tk.X, pady = 2)
+        
+        button6 = tk.Button(self, text="Select Device", height = 2, command= lambda: controller.show_frame(PageFive))
+        button6.pack(fill = tk.X, pady = 2)
 
         def textField_remove(e, text):
             string = e.get()
@@ -190,24 +195,27 @@ class PageThree(tk.Frame):
         label = tk.Label(self, text="Add Device Menu")
         label.pack()
 
-        button1 = ttk.Button(self, text="Back to Main Menu", command= lambda: controller.show_frame(StartPage))
-        button1.pack()
-        button3 = ttk.Button(self, text="Show Device List", command= lambda: controller.show_frame(PageOne))
-        button3.pack()
-        button4 = ttk.Button(self, text="Remove Devices", command= lambda: controller.show_frame(PageTwo))
-        button4.pack()
-        button2 = ttk.Button(self, text="Scan Network", command= lambda: controller.show_frame(PageFour))
-        button2.pack()
         label1 = ttk.Label(self, text="Enter the device identifier to add below")
-        label1.pack()
-        entry = ttk.Entry(self)
-        entry.pack()
+        label1.pack(pady = 10)
+        entry = ttk.Entry(self, width = 30)
+        entry.pack(pady = 10)
         label2 = ttk.Label(self, textvariable=text)
-        label2.pack()
-        button5 = ttk.Button(self, text="Enter", command= lambda:textField_add(entry,text))
-        button5.pack()
+        label2.pack(pady = 5)
+        button5 = tk.Button(self, text="Enter", height = 2, width = 30, command= lambda:textField_add(entry,text))
+        button5.pack(pady = 10)
 
+        button1 = tk.Button(self, text="Back to Main Menu", height = 2, command= lambda: controller.show_frame(StartPage))
+        button1.pack(fill = tk.X, pady = 2)
+        button3 = tk.Button(self, text="Show Device List", height = 2, command= lambda: controller.show_frame(PageOne))
+        button3.pack(fill = tk.X, pady = 2)
+        button4 = tk.Button(self, text="Remove Devices", height = 2, command= lambda: controller.show_frame(PageTwo))
+        button4.pack(fill = tk.X, pady = 2)
+        button2 = tk.Button(self, text="Scan Network", height = 2, command= lambda: controller.show_frame(PageFour))
+        button2.pack(fill = tk.X, pady = 2)
 
+        button6 = tk.Button(self, text="Select Device", height = 2, command= lambda: controller.show_frame(PageFive))
+        button6.pack(fill = tk.X, pady = 2
+                )
         def textField_add(e,text):
             string = e.get()
             remote = xnet.discover_device(string)
@@ -227,39 +235,36 @@ class PageFour(tk.Frame):
         label = tk.Label(self, text="Scan Network")
         label.pack()
         
-        button5 = ttk.Button(self, text="List Network", command= lambda: controller.show_frame(PageOne))
-        button5.pack()
-        button6 = ttk.Button(self, text="Remove Devices", command= lambda: controller.show_frame(PageTwo))
-        button6.pack()
-        button7 = ttk.Button(self, text="Add Devices", command= lambda: controller.show_frame(PageThree))
-        button7.pack()
-
-        button1 = ttk.Button(self, text="Start Scan", command= lambda: scan_network(xnet))
-        button1.pack()
-        button2 = ttk.Button(self, text="Stop Scan", command= lambda: stop_scan(xnet))
-        button2.pack()
-        button3 = ttk.Button(self, text="Refresh text", command= lambda: update(textWindow))
-        button3.pack()
-        button4 = ttk.Button(self, text="Back to Main Menu", command= lambda:controller.show_frame(StartPage))
-        button4.pack()
+        button1 = tk.Button(self, text="Start Scan", height = 1, width = 47, command= lambda: scan_network(xnet))
+        button1.pack(pady = 4)
+        button3 = tk.Button(self, text="Refresh text", height = 1, width = 47, command= lambda: update(textWindow))
+        button3.pack(pady = 4)
         global textWindow
-        textWindow = tk.Text(self, height=5, width=30)
-        textWindow.pack(fill=tk.X, pady=50)
+        textWindow = tk.Text(self, height=5, width=50)
+        textWindow.pack(anchor = 'center', pady = 4)
+
+        button4 = tk.Button(self, text="Back to Main Menu", height = 2, command= lambda:controller.show_frame(StartPage))
+        button4.pack(fill = tk.X, pady = 2)
+        button5 = tk.Button(self, text="List Network", height = 2, command= lambda: controller.show_frame(PageOne))
+        button5.pack(fill = tk.X, pady = 2)
+        button6 = tk.Button(self, text="Remove Devices", height = 2, command= lambda: controller.show_frame(PageTwo))
+        button6.pack(fill = tk.X, pady = 2)
+        button7 = tk.Button(self, text="Add Devices", height = 2, command= lambda: controller.show_frame(PageThree))
+        button7.pack(fill = tk.X, pady = 2)
+        button8 = tk.Button(self, text="Select Device", height = 2, command= lambda: controller.show_frame(PageFive))
+        button8.pack(fill = tk.X, pady = 2)
 
 class PageFive(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self,parent)
         label = tk.Label(self, text="Device Select")
         label.pack()
-
-        button2 = ttk.Button(self, text="Back to Main Menu", command=lambda: controller.show_frame(StartPage))
-        button2.pack(fill=tk.X, pady=10)
-
         curDevice = tk.StringVar()
         curDevice.set("empty")
 
         deviceMenu = tk.OptionMenu(self, curDevice, 'empty')
-        deviceMenu.pack()
+        deviceMenu.config(width = 10)
+        deviceMenu.pack(pady = 10)
         def callback_update(self):
             if len(deviceList) == 0: 
                 deviceMenu.children["menu"].delete(0,"end")
@@ -277,25 +282,27 @@ class PageFive(tk.Frame):
         deviceMenu.bind("<Enter>", callback_update)
 
         option = tk.IntVar()
-        lightOn = ttk.Radiobutton(self, text = "lights on", variable = option, value = 1, command = lambda: interpretOption())
-        lightOff = ttk.Radiobutton(self, text = "lights off", variable = option, value = 2, command = lambda: interpretOption())
-        motion = ttk.Radiobutton(self, text = "motion sense", variable = option, value = 3, command = lambda: interpretOption())
+        lightOn = tk.Radiobutton(self, text = "lights on", variable = option, value = 1, command = lambda: interpretOption())
+        lightOff = tk.Radiobutton(self, text = "lights off", variable = option, value = 2, command = lambda: interpretOption())
+        motion = tk.Radiobutton(self, text = "motion sense", variable = option, value = 3, command = lambda: interpretOption())
 
-        lightOn.pack(anchor="center")
-        lightOff.pack(anchor="center")
-        motion.pack(anchor="center")
+        lightOn.pack(anchor="center", pady = 4)
+        lightOff.pack(anchor="center", pady = 4)
+        motion.pack(anchor="center", pady = 4)
         
         label1 = ttk.Label(self, text = "Brightness Level")
-        label1.pack()
+        label1.pack(pady = 10)
 
-        sBox = ttk.Spinbox(self, from_ = 0, to = 15, state = 'disabled')
-        sBox.pack()
+        sBox = tk.Spinbox(self, from_ = 0, to = 15, width = 6, font = Font(family = 'Helvetica', size = 36),state = 'disabled')
+        sBox.pack(pady = 10)
 
-        button3 = ttk.Button(self, text="Apply Changes", command = lambda: applyOptions())
-        button3.pack()
+        button3 = tk.Button(self, text="Apply Changes", height = 1, width = 30, command = lambda: applyOptions())
+        button3.pack(pady = 5 )
         textField = tk.StringVar()
         label2 = ttk.Label(self, textvariable=textField)
         label2.pack()
+        button4 = tk.Button(self, text="Back to Main Menu", height = 2, command= lambda:controller.show_frame(StartPage))
+        button4.pack(fill = tk.X, pady = 5)
 
         def interpretOption():
             if len(deviceList) != 0:
@@ -304,13 +311,14 @@ class PageFive(tk.Frame):
                 sBox['state'] = 'disabled'
 
         def applyOptions():
+            if len(deviceList) == 0:
+                textField.set("Error there are no devices in the list")
+
             choice = option.get()
             val = int(sBox.get())
             if val > 15:
                 textField.set("Error! Please select a value from 0 to 15 for brightness")
                 pass
-            elif len(deviceList) == 0:
-                textField.set("Error there are no devices in the list")
             elif choice == 1:
                 node = curDevice.get()
                 textField.set("Setting {}'s lights to on".format(node))    
@@ -352,7 +360,7 @@ def server_send():
 try:
     #scan_network(xnet)
     root = mainMenu()
-    root.geometry("420x640")
+    root.geometry("680x460")
     #root.after(1000, server_send)
     root.mainloop()
 except KeyboardInterrupt:
