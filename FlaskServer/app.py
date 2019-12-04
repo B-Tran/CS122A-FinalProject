@@ -8,7 +8,7 @@ from flask import make_response
 app = Flask(__name__)
 increment = 0
 
-List_Data = ["1","2","3","4"]
+List_Data = ["","","",""]
 @app.route('/')
 def index():
     return render_template('index.html')
