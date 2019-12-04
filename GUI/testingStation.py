@@ -341,30 +341,32 @@ class PageFive(tk.Frame):
 
 
 def server_send():
-    if xnet.has_devices():
-        currentDT = datetime.datetime.now()
-        xbee_message = base.read_data()
-        remote = xbee_message.remote_device
-        node = xnet.get_device_by_64(remote.get_64bit_addr())
-        data = xbee_message.data
-       # url = "http://raspberrypi.local:5000/update/{}".format(("%s"%node) + str(currentDT))
-       # try:
-       #     response = requests.get(url)
-       #     response.raise_for_status()
-       # except HTTPError as http_err:
-       #     print(f'HTTP error occured: {http_err}')
-       # except Exception as err:
-       #     print(f'Other error occured: {err}')
-   #l root.after(5000,server_send)
+    if len(deviceList) != 0:
+        if xnet.has_devices():
+            currentDT = datetime.datetime.now()
+            xbee_message = base.read_data()
+            if xbee_message != None:
+                remote = xbee_message.remote_device
+                node = xnet.get_device_by_64(remote.get_64bit_addr())
+                data = xbee_message.data
+                url = "http://RaspZeroWN.local:5000/update/{}".format(("%s"%node) + str(currentDT))
+                try:
+                    response = requests.get(url)
+                    response.raise_for_status()
+                except HTTPError as http_err:
+                    print(f'HTTP error occured: {http_err}')
+                except Exception as err:
+                    print(f'Other error occured: {err}')
+    root.after(1000,server_send)
 
 try:
-    #scan_network(xnet)
     root = mainMenu()
     root.geometry("680x460")
-    #root.after(1000, server_send)
+    root.after(1000, server_send)
     root.mainloop()
 except KeyboardInterrupt:
-    print('')
+    base.send_data_broadcast(b'0')
     base.close()
+    xnet.clear()
     root.quit()
     exit()
