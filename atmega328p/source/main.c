@@ -1,16 +1,8 @@
 /*	Author: Brandon Tran btran054@ucr.edu
  *  Partner(s) Name: Angel Renteria arent007@ucr.edu
  *	Lab Section: 023
- *	Assignment: Lab 6  Exercise 3
+ *	Assignment: Final Project
  *	Exercise Description: [optional - include for your own benefit]
- *  This lab exercise focuses on implementing SPI communication between two
- *  atmega 1284 microcontrollers. In this particular lab exercise, we have a master
- *  that transmits two types of data placed into one 8-bit value. The 8-bit value contains
- *  both a pattern value and speed value. This pattern value is sent to the servant and display on a bank of 8 LEDs.
- *  Depending on the pattern value sent, the pattern displayed will change accordingly. The speed value changes the frequency at which
- *  the pattern is displayed at. The biggest difference is that this challenge problem implements multiple servant that can be selected to
- *  change the pattern and speed, without changing the other servants. The changes made in this lab allow for a particular servant to be selected
- *  and changed. This source file contains the master code for the exercise.
  * 
  *	I acknowledge all content contained herein, excluding template or example
  *	code, is my own original work.
@@ -19,16 +11,16 @@
 #include "../header/scheduler.h"
 #include "../header/timer.h"
 #include "../header/io.h"
-#include "../header/ledPWM.h"
+#include "../header/ledPWM.h" //library for atmega328p pwms
 
 
 #include <avr/io.h>
-//#include <util/delay.h>
 #define F_CPU = 8000000UL
 
 /*---------------------------------------------------------------
   Declarations of enums for the state machines below
   ---------------------------------------------------------------*/
+//states for setting the dimming of lights
 enum dimSM {dimInit, dimSet};
 /*---------------------------------------------------------------
   Declarations of global variables and #defines below
@@ -41,8 +33,14 @@ enum dimSM {dimInit, dimSet};
 /*---------------------------------------------------------------
   Declaration of state machine functions below
   ---------------------------------------------------------------*/
+
+/*---------------------------------------------------------------
+ * This tick function sets the brightness of the leds using pwm
+  ---------------------------------------------------------------*/
 int dim_Tick(int state)   {
-    uint8_t dimVal;
+    uint8_t dimVal;     //variable to store the pwm dimness value
+
+//transitions
     switch(state)   {
         case dimInit:
             break;
@@ -52,11 +50,13 @@ int dim_Tick(int state)   {
         default:
             break;
     }
+//actions
     switch(state)   { 
         case dimInit:
             state = dimSet;
             break;
         case dimSet:
+//sets the dimness value based on the lightVal
             switch(lightVal)   {
                 case 0x00:
                     dimVal = 0;
@@ -110,6 +110,7 @@ int dim_Tick(int state)   {
                     dimVal = 0;
                     break;
             }
+//set each of the pwm channels to the value assigned to dimVal
             set_LED_PWM(CHAN_PB2, dimVal);
             set_LED_PWM(CHAN_PB3, dimVal);
             set_LED_PWM(CHAN_PD3, dimVal);
@@ -123,11 +124,17 @@ int dim_Tick(int state)   {
 
 int main(void)
 {
+    //set port C as inputs for the lightval
    DDRC = 0x00; PORTC = 0xFF;
+   //enable pwm for leds
    LED_PWM_on();
+   //enable timer
    TimerOn();
+   //set timer to 50 ms
    TimerSet(50);
+   //intialize the task
    int curState = dimInit;
+
    while(1)
    {
        curState = dim_Tick(curState);
