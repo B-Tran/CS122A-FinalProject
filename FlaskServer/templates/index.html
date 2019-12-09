@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <!--<meta http-equiv="refresh" content=1">-->
             <title>Light Notifications</title>
             <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon"/>
     </head>
@@ -12,12 +11,6 @@
         <!-- Event Source Updates of the notifications List Here-->
         <font size="+2">
             <div id="serverData1">
-                   <!-- <ul style="list-style-type:none;">
-                        <li id="data1"></li>
-                        <li id="data2"></li>
-                        <li id="data3"></li>
-                        <li id="data4"></li>
-               </ul>-->
             </div>
         </font>
 
@@ -25,8 +18,6 @@
         <script type="text/javascript">
             //check for browser support
             if(typeof(EventSource)!="undefined"){
-                //const ListData = ["data1", "data2", "data3", "data4"];
-                //var ListIndex = 0;
                 //create an object, passing it the name and location
                 //of the server side script
                 var eSource = new EventSource("/GetData1");
@@ -34,10 +25,9 @@
                     //parsiing the data from the event and indexing through the JSON
                     var data = JSON.parse(event.data)
                     
+                    //erase the previous data and print the updated list
                     document.getElementById("serverData1").innerHTML = "";
                     for(var key in data){
-                    //document.getElementById(ListData[ListIndex]).innerHTML = data[key] + "<br>";
-                    //ListIndex++;
                         document.getElementById("serverData1").innerHTML += data[key] + "<br>";
                     }
                 }

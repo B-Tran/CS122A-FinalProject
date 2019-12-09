@@ -3,7 +3,8 @@
  *	Lab Section: 023
  *	Assignment: Final Project
  *	Exercise Description: [optional - include for your own benefit]
- * 
+ *  This code is for the outputs of the led brighness based on
+ *  the light code that the subcontroller sends
  *	I acknowledge all content contained herein, excluding template or example
  *	code, is my own original work.
  */
