@@ -1,3 +1,3 @@
 # CS122A-FinalProject
 
-Link to Project Report: https://docs.google.com/document/d/1Rlkub3uy81YXXhFbsxp30o3qqi1O7NpUUZ8tN8LTSOk/edit?usp=sharing
+Link to Project Report: https://github.com/B-Tran/CS122A-FinalProject/blob/master/CS%20122A%20Custom%20Project/CS122A%20Project%20Report.docx.pdf
